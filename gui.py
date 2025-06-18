@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from CTkTable import *
 
 app = ctk.CTk()
 app.title("my app")
@@ -16,29 +17,63 @@ topFrame = ctk.CTkFrame(app,border_width=4)
 topFrame.grid(row=0, column=0, columnspan=2, sticky="nsew",padx=5, pady=5) 
 
 # Set up the grid for the topFrame
-topFrame.grid_columnconfigure(0, weight=5)
+topFrame.grid_columnconfigure(0, weight=1)
 topFrame.grid_columnconfigure(1, weight=1)
-topFrame.grid_columnconfigure(2, weight=1)
 topFrame.grid_rowconfigure(0, weight=1)
 
 
 titleLabel = ctk.CTkLabel(topFrame,text="examurai",font=("Helvetica",30))
 titleLabel.grid(row=0,column=0, sticky="nw", padx=15, pady=15)
 
-searchPageButton = ctk.CTkButton(topFrame, text="Search Questions", font=("Helvetica", 16), fg_color="#A3A3A3", text_color="#101010")
-searchPageButton.grid(row=0, column=1, sticky="nsew", padx=15, pady=15)
+menuButtonFrame = ctk.CTkFrame(topFrame)
+menuButtonFrame.grid(row=0, column=1, sticky="e", padx=15, pady=15)
 
-addPageButton = ctk.CTkButton(topFrame, text="Add Questions", font=("Helvetica", 16), fg_color="#515151", hover_color="#282828")
-addPageButton.grid(row=0, column=2, sticky="nsew", padx=15, pady=15)
+searchPageButton = ctk.CTkButton(menuButtonFrame, text="Search Questions", font=("Helvetica", 16), height=50, width=120,fg_color="#515151", hover_color="#282828")
+searchPageButton.grid(row=0, column=0, sticky="e", padx=10, pady=0)
+
+addPageButton = ctk.CTkButton(menuButtonFrame, text="Add Questions", font=("Helvetica", 16), height=50, width=120,fg_color="#515151", hover_color="#282828")
+addPageButton.grid(row=0, column=1, sticky="e", padx=10, pady=0)
 
 # Left bar frame
-
 leftFrame = ctk.CTkFrame(app,border_width=4)
 leftFrame.grid(row=1, column=0, sticky="nsew",padx=5, pady=5) 
 leftFrame.grid_columnconfigure(0, weight=1)
+leftFrame.grid_rowconfigure(0, weight=1) # row 1 in leftFrame for search entry fields
+leftFrame.grid_rowconfigure(0, weight=1) # row 2 in leftFrame for search results table
 
-searchLabel = ctk.CTkLabel(leftFrame,text="Search Questions",font=("Helvetica",20))
+searchEntryFrame = ctk.CTkFrame(leftFrame)
+searchEntryFrame.grid(row=0, column=0, sticky="nsew")
+
+searchEntryFrame.grid_columnconfigure(0, weight=1)
+searchEntryFrame.grid_rowconfigure(0, weight=1)
+searchEntryFrame.grid_rowconfigure(1, weight=1)
+searchEntryFrame.grid_rowconfigure(2, weight=1)
+
+searchLabel = ctk.CTkLabel(searchEntryFrame,text="Search Questions",font=("Helvetica",20))
 searchLabel.grid(row=0,column=0, sticky="nsew", padx=30, pady=30)
+
+searchEntry = ctk.CTkEntry(searchEntryFrame, placeholder_text="Search by question or tag", font=("Helvetica", 16), width=300)
+searchEntry.grid(row=1, column=0, sticky="nsew", padx=30, pady=10)  
+
+# Search results table
+searchResultsFrame = ctk.CTkFrame(leftFrame)
+searchResultsFrame.grid(row=1, column=0, sticky="nsew")
+searchResultsFrame.grid_columnconfigure(0, weight=1)
+searchResultsFrame.grid_rowconfigure(0, weight=1)
+searchResultsLabel = ctk.CTkLabel(searchResultsFrame, text="Search Results", font=("Helvetica", 16))
+searchResultsLabel.grid(row=0, column=0, sticky="nsew", padx=30, pady=10)
+
+value = [[1,2,3,4,5],
+         [1,2,3,4,5],
+         [1,2,3,4,5],
+         [1,2,3,4,5],
+         [1,2,3,4,5]]
+
+table = CTkTable(searchResultsFrame, row=5, column=5, values=value, header_color="#515151")
+table.grid(row=1, column=0, sticky="nsew", padx=30, pady=10)
+
+
+
 
 # Right bar frame
 
