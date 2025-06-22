@@ -1,4 +1,5 @@
 # Examurai GUI Application. This is my exemplar for students in Software Development 2025. 
+# This fill will create the GUI using customtkinter. 
 
 import customtkinter as ctk
 from CTkTable import *
