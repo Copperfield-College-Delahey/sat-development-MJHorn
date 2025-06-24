@@ -1,4 +1,4 @@
-# Examurai GUI Application. Responsive and clean.
+# Examurai GUI Application. Exemplar for Y12 Software Development 2025.
 
 import customtkinter as ctk
 from CTkTable import *
@@ -80,7 +80,7 @@ rightFrame.grid_columnconfigure(0, weight=1)
 rightFrame.grid_rowconfigure(0, weight=1)
 
 questionLabel = ctk.CTkLabel(rightFrame, text="[Question will display here.]", font=("Helvetica", 20), anchor="center")
-questionLabel.grid(row=0, column=0, sticky="nsew", padx=30, pady=30)
+questionLabel.grid(row=0, column=0, padx=30, pady=30)
 
 # ─── Bottom Frame ──────────────────────────────────────────
 bottomFrame = ctk.CTkFrame(app, border_width=4)
