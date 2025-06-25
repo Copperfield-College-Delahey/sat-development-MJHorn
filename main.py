@@ -5,10 +5,13 @@ from CTkTable import *
 from pages.searchPage import SearchPage
 from pages.addPage import AddPage
 
+from tkinter import font as tkFont
 
 app = ctk.CTk()
 app.title("my app")
 app.geometry("1000x600")
+
+ctk.FontManager.load_font("fontFiles/Aptos-Bold.ttf")
 
 # Configure app window grid
 app.grid_columnconfigure(0, weight=1)   # Left column
@@ -25,7 +28,7 @@ topFrame.grid_columnconfigure(0, weight=1)
 topFrame.grid_columnconfigure(1, weight=0)
 topFrame.grid_rowconfigure(0, weight=1)
 
-titleLabel = ctk.CTkLabel(topFrame, text="examurai", font=("Helvetica", 30))
+titleLabel = ctk.CTkLabel(topFrame, text="examurai", font=("Aptos", 30))
 titleLabel.grid(row=0, column=0, sticky="nw", padx=15, pady=15)
 
 menuButtonFrame = ctk.CTkFrame(topFrame)
@@ -43,14 +46,14 @@ pageContainer.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
 pageContainer.grid_rowconfigure(0, weight=1)
 pageContainer.grid_columnconfigure(0, weight=1)
 
+# Load add question page
+addPage = AddPage(pageContainer)
+addPage.grid(row=0, column=0, sticky="nsew")
+
 # Load search page
 searchPage = SearchPage(pageContainer)
 searchPage.grid(row=0, column=0, sticky="nsew")
 searchPage.tkraise()  # show searchPage initially
-
-# Load add question page
-addPage = AddPage(pageContainer)
-addPage.grid(row=0, column=0, sticky="nsew")
 
 #Configure buttons in header to raise the relevant pages
 addPageButton.configure(command=addPage.tkraise)

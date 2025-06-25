@@ -11,5 +11,3 @@ class AddPage(ctk.CTkFrame):
         # Placeholder label
         heading = ctk.CTkLabel(self, text="Add Questions Page", font=("Helvetica", 24))
         heading.grid(row=0, column=0, padx=20, pady=20, sticky="n")
-
-        # You can add more widgets here later
