@@ -3,6 +3,8 @@
 import customtkinter as ctk
 from CTkTable import *
 from pages.searchPage import SearchPage
+from pages.addPage import AddPage
+
 
 app = ctk.CTk()
 app.title("my app")
@@ -15,12 +17,6 @@ app.grid_rowconfigure(0, weight=1)      # Top bar
 app.grid_rowconfigure(1, weight=6)      # Main content
 app.grid_rowconfigure(2, weight=1)      # Footer
 
-
-# Container for all pages (middle row only changes)
-pageContainer = ctk.CTkFrame(app)
-pageContainer.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
-pageContainer.grid_rowconfigure(0, weight=1)
-pageContainer.grid_columnconfigure(0, weight=1)
 
 # ─── Top Frame ─────────────────────────────────────────────
 topFrame = ctk.CTkFrame(app, border_width=4)
@@ -41,11 +37,24 @@ searchPageButton.grid(row=0, column=0, padx=10)
 addPageButton = ctk.CTkButton(menuButtonFrame, text="Add Questions", font=("Helvetica", 16), height=50, width=120, fg_color="#515151", hover_color="#282828", cursor="hand2")
 addPageButton.grid(row=0, column=1, padx=10)
 
-## — Variable pages loaded from files in pages folder
+# Container for all pages (middle row only changes; page is loaded from separate files)
+pageContainer = ctk.CTkFrame(app)
+pageContainer.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
+pageContainer.grid_rowconfigure(0, weight=1)
+pageContainer.grid_columnconfigure(0, weight=1)
 
+# Load search page
 searchPage = SearchPage(pageContainer)
 searchPage.grid(row=0, column=0, sticky="nsew")
-searchPage.tkraise()  # show it initially
+searchPage.tkraise()  # show searchPage initially
+
+# Load add question page
+addPage = AddPage(pageContainer)
+addPage.grid(row=0, column=0, sticky="nsew")
+
+#Configure buttons in header to raise the relevant pages
+addPageButton.configure(command=addPage.tkraise)
+searchPageButton.configure(command=searchPage.tkraise)
 
 # ─── Bottom Frame ──────────────────────────────────────────
 bottomFrame = ctk.CTkFrame(app, border_width=4)
