@@ -2,11 +2,20 @@ import customtkinter as ctk
 from CTkTable import CTkTable
 
 class SearchPage(ctk.CTkFrame):
+
+    def update_table(self):
+        print("Updating table")
+        questions = self.question_manager.get_all()
+        new_values = [["Question Text", "Tags", "Source"]]  # header
+        for q in questions:
+            new_values.append([q.question_text,q.tags, q.source])
+        self.table.update_values(new_values)
+        
     def __init__(self, parent, question_manager, controller=None):
         super().__init__(parent)
 
         self.question_manager = question_manager  # shared instance
-        
+
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=4)
         self.grid_rowconfigure(0, weight=1)
@@ -44,8 +53,19 @@ class SearchPage(ctk.CTkFrame):
         searchButton = ctk.CTkButton(searchControlsFrame, text="Search", font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2", width=120)
         searchButton.grid(row=0, column=3, rowspan=3, sticky="nsew", padx=10, pady=10)
 
-        table = CTkTable(leftFrame, row=8, column=3, header_color="#515151")
-        table.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
+        # Get all questions and arrange into arrays
+        questions = self.question_manager.get_all()
+        print("Got questions")
+        qTable = [["Question Text", "Tags", "Source"]]
+        for q in questions:
+            qTable.append([q.question_text, ", ".join(q.tags), q.source])
+
+
+        self.table_values = [["Question Text", "Tags", "Source"]]
+        self.table = CTkTable(leftFrame, row=5, column=3,values=self.table_values, header_color="#515151")
+        self.table.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
+        self.update_table()  # Populate initially
+
 
         # Right Frame
         rightFrame = ctk.CTkFrame(self, border_width=4)

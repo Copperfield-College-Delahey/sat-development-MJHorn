@@ -16,6 +16,11 @@ app.geometry("1000x600")
 
 ctk.FontManager.load_font("fontFiles/Aptos-Bold.ttf")
 
+def show_search_page():
+    searchPage.update_table()
+    searchPage.tkraise()
+
+
 # Configure app window grid
 app.grid_columnconfigure(0, weight=1)   # Left column
 app.grid_columnconfigure(1, weight=4)   # Right column
@@ -60,7 +65,7 @@ searchPage.tkraise()  # show searchPage initially
 
 #Configure buttons in header to raise the relevant pages
 addPageButton.configure(command=addPage.tkraise)
-searchPageButton.configure(command=searchPage.tkraise)
+searchPageButton.configure(command=show_search_page)
 
 # ─── Bottom Frame ──────────────────────────────────────────
 bottomFrame = ctk.CTkFrame(app, border_width=4)
