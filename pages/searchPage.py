@@ -60,10 +60,13 @@ class SearchPage(ctk.CTkFrame):
         for q in questions:
             qTable.append([q.question_text, ", ".join(q.tags), q.source])
 
+        # Scrollable area for the table
+        scrollFrame = ctk.CTkScrollableFrame(leftFrame)
+        scrollFrame.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
 
         self.table_values = [["Question Text", "Tags", "Source"]]
-        self.table = CTkTable(leftFrame, row=5, column=3,values=self.table_values, header_color="#515151")
-        self.table.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
+        self.table = CTkTable(scrollFrame, row=25, column=3,values=self.table_values, header_color="#515151")
+        self.table.pack()
         self.update_table()  # Populate initially
 
 
@@ -73,5 +76,5 @@ class SearchPage(ctk.CTkFrame):
         rightFrame.grid_columnconfigure(0, weight=1)
         rightFrame.grid_rowconfigure(0, weight=1)
 
-        questionLabel = ctk.CTkLabel(rightFrame, text="[Question will display here.]", font=("Helvetica", 20), anchor="center")
-        questionLabel.grid(row=0, column=0, padx=30, pady=30)
+        self.questionLabel = ctk.CTkLabel(rightFrame, text="[Question will display here.]", font=("Helvetica", 20), anchor="center")
+        self.questionLabel.grid(row=0, column=0, padx=30, pady=30)
