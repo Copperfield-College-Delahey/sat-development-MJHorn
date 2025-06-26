@@ -4,8 +4,11 @@ import customtkinter as ctk
 from CTkTable import *
 from pages.searchPage import SearchPage
 from pages.addPage import AddPage
+from questions import *
 
 from tkinter import font as tkFont
+
+question_manager = QuestionManager()
 
 app = ctk.CTk()
 app.title("my app")
@@ -47,11 +50,11 @@ pageContainer.grid_rowconfigure(0, weight=1)
 pageContainer.grid_columnconfigure(0, weight=1)
 
 # Load add question page
-addPage = AddPage(pageContainer)
+addPage = AddPage(pageContainer,question_manager)
 addPage.grid(row=0, column=0, sticky="nsew")
 
 # Load search page
-searchPage = SearchPage(pageContainer)
+searchPage = SearchPage(pageContainer,question_manager)
 searchPage.grid(row=0, column=0, sticky="nsew")
 searchPage.tkraise()  # show searchPage initially
 

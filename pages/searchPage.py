@@ -2,8 +2,10 @@ import customtkinter as ctk
 from CTkTable import CTkTable
 
 class SearchPage(ctk.CTkFrame):
-    def __init__(self, parent, controller=None):
+    def __init__(self, parent, question_manager, controller=None):
         super().__init__(parent)
+
+        self.question_manager = question_manager  # shared instance
         
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=4)
