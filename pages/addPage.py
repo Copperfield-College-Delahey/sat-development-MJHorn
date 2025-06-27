@@ -1,50 +1,36 @@
 import customtkinter as ctk
+from questions import *
 
 class AddPage(ctk.CTkFrame):
-    def __init__(self, parent, controller=None):
+    def __init__(self, parent, question_manager,controller=None):
         super().__init__(parent)
+
+        self.question_manager = question_manager  # shared instance
+
+        def save_question():
+            text = textInput.get()
+            tags = tagInput.get().split(",")
+            source = sourceInput.get()
+            new_question = Question(text, tags, source)
+            self.question_manager.add_question(new_question)
         
-        self.grid_rowconfigure((0, 1, 2, 3, 4, 5), weight=1)
-        self.grid_columnconfigure(0, weight=1)
+        addQuestionFrame = ctk.CTkFrame(self)
+        addQuestionFrame.pack(padx=20, pady=50)  
 
-        heading = ctk.CTkLabel(self, text="Add Question Page", font=("Helvetica", 24))
-        heading.grid(row=0, column=0, padx=20, pady=10, sticky="n")
+        # Heading label
+        heading = ctk.CTkLabel(addQuestionFrame, text="Add Question", font=("Helvetica", 24))
+        heading.pack(pady=10, padx=10)
 
-        # Question text entry
-        self.question_entry = ctk.CTkEntry(self, placeholder_text="Enter question text", height=100, font=("Helvetica", 16))
-        self.question_entry.grid(row=1, column=0, padx=20, pady=10, sticky="ew")
+        textInput = ctk.CTkEntry(addQuestionFrame, placeholder_text="Enter question text. ", width=500)
+        textInput.pack(anchor="w",pady=10, padx=10)
 
-        # Tags entry
-        self.tags_entry = ctk.CTkEntry(self, placeholder_text="Enter tags (comma-separated)", font=("Helvetica", 16))
-        self.tags_entry.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
+        tagInput = ctk.CTkEntry(addQuestionFrame, placeholder_text="Enter question tags, separated by commas. ", width=500)
+        tagInput.pack( anchor="w",pady=10, padx=10)
 
-        # Source entry
-        self.source_entry = ctk.CTkEntry(self, placeholder_text="Enter source", font=("Helvetica", 16))
-        self.source_entry.grid(row=3, column=0, padx=20, pady=10, sticky="ew")
+        sourceInput = ctk.CTkEntry(addQuestionFrame, placeholder_text="Enter question source", width=500)
+        sourceInput.pack( anchor="w",pady=10, padx=10)
 
-        # Submit button
-        submit_button = ctk.CTkButton(self, text="Submit Question", font=("Helvetica", 16), command=self.submit_question, fg_color="#515151", hover_color="#282828",)
-        submit_button.grid(row=4, column=0, padx=20, pady=20, sticky="ew")
+        saveButton = ctk.CTkButton(addQuestionFrame,text="Save Question",command=save_question, fg_color="#515151", hover_color="#282828", cursor="hand2")
+        saveButton.pack(padx=10, pady=10)
 
-        # Feedback label
-        self.feedback_label = ctk.CTkLabel(self, text="", font=("Helvetica", 14), text_color="green")
-        self.feedback_label.grid(row=5, column=0, padx=20, pady=5, sticky="n")
-
-    def submit_question(self):
-        question_text = self.question_entry.get("1.0", "end").strip()
-        tags = [tag.strip() for tag in self.tags_entry.get().split(",") if tag.strip()]
-        source = self.source_entry.get().strip()
-
-        if question_text and tags and source:
-            # Temporary print — replace with saving to file/db/list
-            print("New Question:")
-            print("Text:", question_text)
-            print("Tags:", tags)
-            print("Source:", source)
-
-            self.feedback_label.configure(text="Question submitted!", text_color="green")
-            self.question_entry.delete("1.0", "end")
-            self.tags_entry.delete(0, "end")
-            self.source_entry.delete(0, "end")
-        else:
-            self.feedback_label.configure(text="Please fill in all fields.", text_color="red")
+        
