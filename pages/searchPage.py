@@ -1,5 +1,7 @@
 import customtkinter as ctk
 from CTkTable import CTkTable
+from CTkTableRowSelector import *
+from PIL import Image
 
 class SearchPage(ctk.CTkFrame):
 
@@ -10,7 +12,29 @@ class SearchPage(ctk.CTkFrame):
         for q in questions:
             new_values.append([q.question_text,q.tags, q.source])
         self.table.update_values(new_values)
-        
+                
+    def poll_selected_row(self):
+        self.current = list(self.row_selector.selected_rows)
+        if len(self.current) > 0:
+            self.current = self.current[0]
+
+            if self.current != self.last_selected_row:
+                self.last_selected_row = self.current
+                self.row_clicked(self.current)
+        self.after(100, self.poll_selected_row)  # check every 200ms
+
+    def row_clicked(self, index):
+        print("Row clicked!")
+        questionText = self.table.values[self.current][0]
+        questions = self.question_manager.get_all()
+        selectedQuestion = None
+        for question in questions:
+            if question.question_text == questionText:
+                selectedQuestion = question
+                break
+        if selectedQuestion is not None:
+            self.questionLabel.configure(text=selectedQuestion.tags)
+
     def __init__(self, parent, question_manager, controller=None):
         super().__init__(parent)
 
@@ -69,6 +93,10 @@ class SearchPage(ctk.CTkFrame):
         self.table.pack()
         self.update_table()  # Populate initially
 
+        # Add the row selector to the table
+        self.row_selector = CTkTableRowSelector(self.table)
+        self.last_selected_row = None
+        self.poll_selected_row()
 
         # Right Frame
         rightFrame = ctk.CTkFrame(self, border_width=4)
@@ -78,3 +106,9 @@ class SearchPage(ctk.CTkFrame):
 
         self.questionLabel = ctk.CTkLabel(rightFrame, text="[Question will display here.]", font=("Helvetica", 20), anchor="center")
         self.questionLabel.grid(row=0, column=0, padx=30, pady=30)
+
+
+        self.questionImage = ctk.CTkImage(light_image=Image.open("./questionFiles/examq1.png"), size=(400,200))
+
+        imageLabel = ctk.CTkLabel(rightFrame, image=self.questionImage, text="")  # text="" hides text
+        imageLabel.grid(row=1, column=0)
