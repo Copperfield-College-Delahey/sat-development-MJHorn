@@ -33,7 +33,16 @@ class SearchPage(ctk.CTkFrame):
                 selectedQuestion = question
                 break
         if selectedQuestion is not None:
-            self.questionLabel.configure(text=selectedQuestion.tags)
+            
+            image = Image.open(f"./questionFiles/{selectedQuestion.questionId}.png")
+            aspect_ratio = image.width / image.height
+
+            desiredWidth = 500
+            desiredHeight = int(desiredWidth / aspect_ratio)
+
+            self.questionImage = ctk.CTkImage(light_image=image, size=(desiredWidth,desiredHeight))
+
+            self.imageLabel.configure(image=self.questionImage)
 
     def __init__(self, parent, question_manager, controller=None):
         super().__init__(parent)
@@ -104,11 +113,5 @@ class SearchPage(ctk.CTkFrame):
         rightFrame.grid_columnconfigure(0, weight=1)
         rightFrame.grid_rowconfigure(0, weight=1)
 
-        self.questionLabel = ctk.CTkLabel(rightFrame, text="[Question will display here.]", font=("Helvetica", 20), anchor="center")
-        self.questionLabel.grid(row=0, column=0, padx=30, pady=30)
-
-
-        self.questionImage = ctk.CTkImage(light_image=Image.open("./questionFiles/examq1.png"), size=(400,200))
-
-        imageLabel = ctk.CTkLabel(rightFrame, image=self.questionImage, text="")  # text="" hides text
-        imageLabel.grid(row=1, column=0)
+        self.imageLabel = ctk.CTkLabel(rightFrame, text="")  # text="" hides text
+        self.imageLabel.grid(row=0, column=0)
