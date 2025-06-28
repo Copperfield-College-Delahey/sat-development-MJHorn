@@ -24,6 +24,7 @@ class AddPage(ctk.CTkFrame):
                 image_path = f"questionFiles/{id}.png"
                 self.pasted_or_uploaded_image.save(image_path)
             messagebox.showinfo("Saved", "Question saved successfully!")
+            self.question_manager.save_to_xml("questions.xml")
             self.clear_form()
 
         def paste_image():

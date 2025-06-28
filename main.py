@@ -10,6 +10,8 @@ from tkinter import font as tkFont
 
 question_manager = QuestionManager()
 
+question_manager.load_from_xml("questions.xml")
+
 app = ctk.CTk()
 app.title("my app")
 app.geometry("1000x600")
