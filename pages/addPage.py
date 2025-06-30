@@ -36,15 +36,16 @@ class AddPage(ctk.CTkFrame):
                 messagebox.showwarning("No image", "No image in clipboard.")
 
         def choose_image():
-            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg;*.gif")])
+            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif")])
             if file_path:
                 image = Image.open(file_path)
                 self.pasted_or_uploaded_image = image
                 show_image_preview(image)
 
         def show_image_preview(img):
-            img.thumbnail((200, 200))
-            tk_img = ImageTk.PhotoImage(img)
+            preview_img = img.copy()
+            preview_img.thumbnail((200, 200))
+            tk_img = ImageTk.PhotoImage(preview_img)
             imageLabel.configure(image=tk_img)
             imageLabel.image = tk_img
             imageLabel.pack(pady=(10, 0))

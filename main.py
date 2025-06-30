@@ -25,7 +25,6 @@ def show_search_page():
 
 # Configure app window grid
 app.grid_columnconfigure(0, weight=1)   # Left column
-app.grid_columnconfigure(1, weight=4)   # Right column
 app.grid_rowconfigure(0, weight=1)      # Top bar
 app.grid_rowconfigure(1, weight=6)      # Main content
 app.grid_rowconfigure(2, weight=1)      # Footer
@@ -52,9 +51,10 @@ addPageButton.grid(row=0, column=1, padx=10)
 
 # Container for all pages (middle row only changes; page is loaded from separate files)
 pageContainer = ctk.CTkFrame(app)
-pageContainer.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
+pageContainer.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 pageContainer.grid_rowconfigure(0, weight=1)
 pageContainer.grid_columnconfigure(0, weight=1)
+
 
 # Load add question page
 addPage = AddPage(pageContainer,question_manager)
@@ -63,11 +63,22 @@ addPage.grid(row=0, column=0, sticky="nsew")
 # Load search page
 searchPage = SearchPage(pageContainer,question_manager)
 searchPage.grid(row=0, column=0, sticky="nsew")
-searchPage.tkraise()  # show searchPage initially
+
+frames = {
+    "AddPage": addPage,
+    "SearchPage": searchPage
+}
+
+# Page-switching function
+def show_frame(page_name):
+    frames[page_name].tkraise()
+
+# Initially show the SearchPage
+show_frame("SearchPage")
 
 #Configure buttons in header to raise the relevant pages
-addPageButton.configure(command=addPage.tkraise)
-searchPageButton.configure(command=show_search_page)
+addPageButton.configure(command=lambda: show_frame("AddPage"))
+searchPageButton.configure(command=lambda: show_frame("SearchPage"))
 
 # ─── Bottom Frame ──────────────────────────────────────────
 bottomFrame = ctk.CTkFrame(app, border_width=4)
