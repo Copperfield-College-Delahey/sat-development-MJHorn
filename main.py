@@ -43,10 +43,10 @@ titleLabel.grid(row=0, column=0, sticky="nw", padx=15, pady=15)
 menuButtonFrame = ctk.CTkFrame(topFrame)
 menuButtonFrame.grid(row=0, column=1, sticky="e", padx=15, pady=15)
 
-searchPageButton = ctk.CTkButton(menuButtonFrame, text="Filter Questions", font=("Helvetica", 16), height=50, width=120, fg_color="#515151", hover_color="#282828", cursor="hand2")
+searchPageButton = ctk.CTkButton(menuButtonFrame, text="Filter \nQuestions", font=("Helvetica", 16), height=50, width=120, fg_color="#515151", hover_color="#282828", cursor="hand2")
 searchPageButton.grid(row=0, column=0, padx=10)
 
-addPageButton = ctk.CTkButton(menuButtonFrame, text="Add Questions", font=("Helvetica", 16), height=50, width=120, fg_color="#515151", hover_color="#282828", cursor="hand2")
+addPageButton = ctk.CTkButton(menuButtonFrame, text="Add \nQuestions", font=("Helvetica", 16), height=50, width=120, fg_color="#515151", hover_color="#282828", cursor="hand2")
 addPageButton.grid(row=0, column=1, padx=10)
 
 # Container for all pages (middle row only changes; page is loaded from separate files)
