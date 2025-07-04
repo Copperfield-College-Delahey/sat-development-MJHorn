@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from CTkTable import CTkTable
 from CTkTableRowSelector import *
-from PIL import Image
+from PIL import Image, ImageOps
 
 class SearchPage(ctk.CTkFrame):
 
@@ -37,11 +37,16 @@ class SearchPage(ctk.CTkFrame):
             image = Image.open(f"./questionFiles/{selectedQuestion.questionId}.png")
             aspect_ratio = image.width / image.height
 
-            desiredWidth = 500
-            desiredHeight = int(desiredWidth / aspect_ratio)
+            desiredWidth, desiredHeight = 500, 350
 
-            self.questionImage = ctk.CTkImage(light_image=image, size=(desiredWidth,desiredHeight))
+            # AI assistance with padding image to maintain constant size regardless of aspect ratio    
+            # Resize and pad to fit the fixed area
+            image = ImageOps.contain(image, (desiredWidth, desiredHeight))
+            padded = Image.new("RGB", (desiredWidth, desiredHeight), (255, 255, 255))
+            offset = ((desiredWidth - image.width) // 2, (desiredHeight - image.height) // 2)
+            padded.paste(image, offset)
 
+            self.questionImage = ctk.CTkImage(light_image=padded, size=(desiredWidth, desiredHeight))
             self.imageLabel.configure(image=self.questionImage)
 
     def __init__(self, parent, question_manager, controller=None):
@@ -113,5 +118,5 @@ class SearchPage(ctk.CTkFrame):
         rightFrame.grid_columnconfigure(0, weight=1)
         rightFrame.grid_rowconfigure(0, weight=1)
 
-        self.imageLabel = ctk.CTkLabel(rightFrame, text="")  # text="" hides text
+        self.imageLabel = ctk.CTkLabel(rightFrame, text="", width=500, height=350)  # text="" hides text
         self.imageLabel.grid(row=0, column=0)
