@@ -28,7 +28,8 @@ class QuestionManager:
         return self.questions
     
     def search(self, keyword):
-        return [q for q in self.questions if keyword.lower() in q.question_text.lower()]
+        return [q for q in self.questions if keyword.lower() in q.question_text.lower()
+                or keyword.lower() in q.tags]
     
     def save_to_xml(self, filepath):
         root = ET.Element("questions")
