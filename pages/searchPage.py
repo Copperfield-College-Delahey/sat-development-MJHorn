@@ -54,18 +54,13 @@ class SearchPage(ctk.CTkFrame):
         print("Searching")
         tagsString = self.searchEntry.get()
         tagList = tagsString.split(",")
-        print(tagList)
 
-        # reference self.searchTypeVar to determine AND vs OR search
-        # Just do AND for now. 
-
-        searchTerm = tagList[0]
-
-        questions = self.question_manager.search(searchTerm)
+        questions = self.question_manager.search(tagList,self.searchTypeVar)
 
         new_values = [["Question Text", "Tags", "Source"]]  # header
         for q in questions:
-            new_values.append([q.question_text,q.tags, q.source])
+            formatted_tags = ", ".join(q.tags)
+            new_values.append([q.question_text,formatted_tags, q.source])
         self.table.update_values(new_values)
                 
 

@@ -27,9 +27,24 @@ class QuestionManager:
     def get_all(self):
         return self.questions
     
-    def search(self, keyword):
-        return [q for q in self.questions if keyword.lower() in q.question_text.lower()
-                or keyword.lower() in q.tags]
+    def search(self, keywords, mode):
+        keywords_lower = [kw.lower() for kw in keywords]
+
+        def matches(q):
+            text = q.question_text.lower()
+            tags = [tag.lower() for tag in q.tags]
+            if mode == "AND":
+                return all(
+                    any(kw in text or any(kw in tag for tag in tags) for kw in [keyword])
+                    for keyword in keywords_lower
+                )
+            else:  # "OR"
+                return any(
+                    kw in text or any(kw in tag for tag in tags)
+                    for kw in keywords_lower
+                )
+
+        return [q for q in self.questions if matches(q)]
     
     def save_to_xml(self, filepath):
         root = ET.Element("questions")
