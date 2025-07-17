@@ -18,10 +18,6 @@ app.geometry("1000x600")
 
 ctk.FontManager.load_font("fontFiles/Aptos-Bold.ttf")
 
-def show_search_page():
-    searchPage.update_table()
-    searchPage.tkraise()
-
 
 # Configure app window grid
 app.grid_columnconfigure(0, weight=1)   # Left column
@@ -71,7 +67,9 @@ frames = {
 
 # Page-switching function
 def show_frame(page_name):
-    frames[page_name].tkraise()
+    frame = frames[page_name]
+    frame.tkraise()
+    frame.focus_set()
 
 # Initially show the SearchPage
 show_frame("SearchPage")

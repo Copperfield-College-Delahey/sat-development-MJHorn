@@ -21,7 +21,7 @@ class SearchPage(ctk.CTkFrame):
             if self.current != self.last_selected_row:
                 self.last_selected_row = self.current
                 self.row_clicked(self.current)
-        self.after(100, self.poll_selected_row)  # check every 200ms
+        self.after(20, self.poll_selected_row)
 
     def row_clicked(self, index):
         print("Row clicked!")
@@ -48,6 +48,13 @@ class SearchPage(ctk.CTkFrame):
 
             self.questionImage = ctk.CTkImage(light_image=padded, size=(desiredWidth, desiredHeight))
             self.imageLabel.configure(image=self.questionImage)
+
+    def search(self):
+        print("Searching")
+        tagsString = self.searchEntry.getText()
+        tagList = ",".split(tagsString)
+        print(tagList,)
+
 
     def __init__(self, parent, question_manager, controller=None):
         super().__init__(parent)
@@ -76,19 +83,21 @@ class SearchPage(ctk.CTkFrame):
         searchControlsFrame.grid_columnconfigure(1, weight=1)
         searchControlsFrame.grid_columnconfigure(3, weight=0, minsize=130)
 
-        searchEntry = ctk.CTkEntry(searchControlsFrame, placeholder_text="Search by question or tag", font=("Helvetica", 16), height=40)
-        searchEntry.grid(row=0, column=0, rowspan=2, sticky="nsew", padx=(5, 0), pady=(5, 0))
+        self.searchEntry = ctk.CTkEntry(searchControlsFrame, placeholder_text="Search by question or tag", font=("Helvetica", 16), height=40)
+        self.searchEntry.grid(row=0, column=0, rowspan=2, sticky="nsew", padx=(5, 0), pady=(5, 0))
 
-        radioAnd = ctk.CTkRadioButton(searchControlsFrame, text="AND")
+        self.searchTypeVar = ctk.StringVar(value="AND")  # Default selection
+
+        radioAnd = ctk.CTkRadioButton(searchControlsFrame, text="AND", variable=self.searchTypeVar, value="AND")
         radioAnd.grid(row=0, column=1, sticky="w", padx=5, pady=(5, 0))
 
-        radioOr = ctk.CTkRadioButton(searchControlsFrame, text="OR")
+        radioOr = ctk.CTkRadioButton(searchControlsFrame, text="OR", variable=self.searchTypeVar, value="OR")
         radioOr.grid(row=1, column=1, sticky="w", padx=5, pady=(0, 5))
 
         excludeEntry = ctk.CTkEntry(searchControlsFrame, placeholder_text="Exclude tags", font=("Helvetica", 16), height=40)
         excludeEntry.grid(row=2, column=0, sticky="nsew", padx=(5, 0), pady=(5, 5))
 
-        searchButton = ctk.CTkButton(searchControlsFrame, text="Search", font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2", width=120)
+        searchButton = ctk.CTkButton(searchControlsFrame, text="Search", command=self.search, font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2", width=120)
         searchButton.grid(row=0, column=3, rowspan=3, sticky="nsew", padx=10, pady=10)
 
         # Get all questions and arrange into arrays
