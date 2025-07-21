@@ -108,10 +108,14 @@ class SearchPage(ctk.CTkFrame):
 
         self.searchTypeVar = ctk.StringVar(value="AND")  # Default selection
 
-        radioAnd = ctk.CTkRadioButton(searchControlsFrame, text="AND", variable=self.searchTypeVar, value="AND")
+        # Radio buttons for search type (AND or OR for multiple tags entered)
+
+        self.searchType = ctk.StringVar(value="AND")
+
+        radioAnd = ctk.CTkRadioButton(searchControlsFrame, text="AND", variable=self.searchType, value="AND")
         radioAnd.grid(row=0, column=1, sticky="w", padx=5, pady=(5, 0))
 
-        radioOr = ctk.CTkRadioButton(searchControlsFrame, text="OR", variable=self.searchTypeVar, value="OR")
+        radioOr = ctk.CTkRadioButton(searchControlsFrame, text="OR", variable=self.searchType, value="OR")
         radioOr.grid(row=1, column=1, sticky="w", padx=5, pady=(0, 5))
 
         excludeEntry = ctk.CTkEntry(searchControlsFrame, placeholder_text="Exclude tags", font=("Helvetica", 16), height=40)
