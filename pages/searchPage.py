@@ -8,10 +8,10 @@ class SearchPage(ctk.CTkFrame):
     def update_table(self):
         print("Updating table")
         questions = self.question_manager.get_all()
-        new_values = [["Question Text", "Tags", "Source"]]  # header
+        new_values = [["Question ID", "Question Text", "Tags", "Source"]]  # header
         for q in questions:
             formatted_tags = ", ".join(q.tags)
-            new_values.append([q.question_text,formatted_tags, q.source])
+            new_values.append([q.questionId, q.question_text,formatted_tags, q.source])
         self.table.update_values(new_values)
                 
     def poll_selected_row(self):
@@ -70,7 +70,7 @@ class SearchPage(ctk.CTkFrame):
         questions = self.question_manager.get_all()
         for question in questions:
             print("Comparing: ", question.question_text, selectedQ[0])
-            if question.question_text == selectedQ[0]:
+            if question.question_id == selectedQ[0]:
                 self.question_manager.delete_question(question)
                 self.question_manager.save_to_xml("questions.xml")
                 self.update_table()
@@ -127,16 +127,12 @@ class SearchPage(ctk.CTkFrame):
         # Get all questions and arrange into arrays
         questions = self.question_manager.get_all()
         print("Got questions")
-        qTable = [["Question Text", "Tags", "Source"]]
-        for q in questions:
-            qTable.append([q.question_text, ", ".join(q.tags), q.source])
-
         # Scrollable area for the table
         scrollFrame = ctk.CTkScrollableFrame(leftFrame)
         scrollFrame.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
 
-        self.table_values = [["Question Text", "Tags", "Source"]]
-        self.table = CTkTable(scrollFrame, row=25, column=3,values=self.table_values, header_color="#515151")
+        self.table_values = [["Question ID", "Question Text", "Tags", "Source"]]
+        self.table = CTkTable(scrollFrame, row=25, column=4,values=self.table_values, header_color="#515151")
         self.table.pack()
         self.update_table()  # Populate initially
 
