@@ -24,6 +24,10 @@ class QuestionManager:
         self.questions.append(question)
         print("Added question: ", question.question_text)
 
+    def delete_question(self, question):
+        self.questions.remove(question)
+        print("Deleted question: ", question.question_text)
+
     def get_all(self):
         return self.questions
     

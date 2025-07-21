@@ -62,12 +62,19 @@ class SearchPage(ctk.CTkFrame):
             formatted_tags = ", ".join(q.tags)
             new_values.append([q.question_text,formatted_tags, q.source])
         self.table.update_values(new_values)
-                
 
-
-
-
-
+    def delete(self):
+        selectedQ = self.table.values[self.current]
+        print("Deleting",selectedQ[0])
+        
+        questions = self.question_manager.get_all()
+        for question in questions:
+            print("Comparing: ", question.question_text, selectedQ[0])
+            if question.question_text == selectedQ[0]:
+                self.question_manager.delete_question(question)
+                self.question_manager.save_to_xml("questions.xml")
+                self.update_table()
+                break
 
     def __init__(self, parent, question_manager, controller=None):
         super().__init__(parent)
@@ -133,6 +140,10 @@ class SearchPage(ctk.CTkFrame):
         self.row_selector = CTkTableRowSelector(self.table)
         self.last_selected_row = None
         self.poll_selected_row()
+
+        # Delete question button
+        deleteButton = ctk.CTkButton(leftFrame, text="Delete question",command=self.delete, font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2")
+        deleteButton.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
 
         # Right Frame
         rightFrame = ctk.CTkFrame(self, border_width=4)
