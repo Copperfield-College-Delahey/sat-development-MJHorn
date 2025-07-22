@@ -70,6 +70,8 @@ def show_frame(page_name):
     frame = frames[page_name]
     frame.tkraise()
     frame.focus_set()
+    if page_name == "SearchPage":
+        frame.update_table()
 
 # Initially show the SearchPage
 show_frame("SearchPage")

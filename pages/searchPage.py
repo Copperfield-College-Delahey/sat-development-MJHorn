@@ -26,11 +26,11 @@ class SearchPage(ctk.CTkFrame):
 
     def row_clicked(self, index):
         print("Row clicked!")
-        questionText = self.table.values[self.current][0]
+        questionId = self.table.values[self.current][0]
         questions = self.question_manager.get_all()
         selectedQuestion = None
         for question in questions:
-            if question.question_text == questionText:
+            if question.questionId == questionId:
                 selectedQuestion = question
                 break
         if selectedQuestion is not None:
@@ -57,10 +57,10 @@ class SearchPage(ctk.CTkFrame):
 
         questions = self.question_manager.search(tagList,self.searchTypeVar)
 
-        new_values = [["Question Text", "Tags", "Source"]]  # header
+        new_values = [["Question ID", "Question Text", "Tags", "Source"]]  # header
         for q in questions:
             formatted_tags = ", ".join(q.tags)
-            new_values.append([q.question_text,formatted_tags, q.source])
+            new_values.append([q.questionId, q.question_text,formatted_tags, q.source])
         self.table.update_values(new_values)
 
     def delete(self):
@@ -70,11 +70,17 @@ class SearchPage(ctk.CTkFrame):
         questions = self.question_manager.get_all()
         for question in questions:
             print("Comparing: ", question.question_text, selectedQ[0])
-            if question.question_id == selectedQ[0]:
+            if question.questionId == selectedQ[0]:
                 self.question_manager.delete_question(question)
                 self.question_manager.save_to_xml("questions.xml")
                 self.update_table()
                 break
+
+    def edit(self):
+        selectedQ = self.table.values[self.current]
+        print("Editing",selectedQ[0])
+
+
 
     def __init__(self, parent, question_manager, controller=None):
         super().__init__(parent)
@@ -92,12 +98,13 @@ class SearchPage(ctk.CTkFrame):
         leftFrame.grid_rowconfigure(1, weight=1)
         leftFrame.grid_rowconfigure(2, weight=3)
         leftFrame.grid_columnconfigure(0, weight=1)
+        leftFrame.grid_columnconfigure(1, weight=1)
 
         searchLabel = ctk.CTkLabel(leftFrame, text="Search Questions", font=("Helvetica", 20))
         searchLabel.grid(row=0, column=0, sticky="nw", padx=15, pady=(10, 5))
 
         searchControlsFrame = ctk.CTkFrame(leftFrame, fg_color="white")
-        searchControlsFrame.grid(row=1, column=0, sticky="nsew", padx=10, pady=(0, 10))
+        searchControlsFrame.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=(0, 10))
 
         searchControlsFrame.grid_columnconfigure(0, weight=3)
         searchControlsFrame.grid_columnconfigure(1, weight=1)
@@ -129,7 +136,7 @@ class SearchPage(ctk.CTkFrame):
         print("Got questions")
         # Scrollable area for the table
         scrollFrame = ctk.CTkScrollableFrame(leftFrame)
-        scrollFrame.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
+        scrollFrame.grid(row=2, column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
 
         self.table_values = [["Question ID", "Question Text", "Tags", "Source"]]
         self.table = CTkTable(scrollFrame, row=25, column=4,values=self.table_values, header_color="#515151")
@@ -142,8 +149,12 @@ class SearchPage(ctk.CTkFrame):
         self.poll_selected_row()
 
         # Delete question button
-        deleteButton = ctk.CTkButton(leftFrame, text="Delete question",command=self.delete, font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2")
+        deleteButton = ctk.CTkButton(leftFrame, text="Delete question",command=self.delete, font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2", width=100)
         deleteButton.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Edit question button
+        editButton = ctk.CTkButton(leftFrame, text="Edit question",command=self.edit, font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2", width=100)
+        editButton.grid(row=3, column=1, sticky="nsew", padx=10, pady=10)
 
         # Right Frame
         rightFrame = ctk.CTkFrame(self, border_width=4)
