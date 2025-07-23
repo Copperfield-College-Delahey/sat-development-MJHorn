@@ -8,6 +8,7 @@ class SearchPage(ctk.CTkFrame):
     def update_table(self):
         print("Updating table")
         questions = self.question_manager.get_all()
+        questions.sort(key=lambda q: q.questionId)  # Sort by questionId
         new_values = [["Question ID", "Question Text", "Tags", "Source"]]  # header
         for q in questions:
             formatted_tags = ", ".join(q.tags)
@@ -55,13 +56,17 @@ class SearchPage(ctk.CTkFrame):
         tagsString = self.searchEntry.get()
         tagList = tagsString.split(",")
 
-        questions = self.question_manager.search(tagList,self.searchTypeVar)
+        searchType = self.searchType.get()
+
+        questions = self.question_manager.search(tagList,searchType)
+        questions.sort(key=lambda q: q.questionId)  # Sort by questionId
 
         new_values = [["Question ID", "Question Text", "Tags", "Source"]]  # header
         for q in questions:
             formatted_tags = ", ".join(q.tags)
             new_values.append([q.questionId, q.question_text,formatted_tags, q.source])
         self.table.update_values(new_values)
+        self.last_selected_row = None
 
     def delete(self):
         selectedQ = self.table.values[self.current]
@@ -74,18 +79,28 @@ class SearchPage(ctk.CTkFrame):
                 self.question_manager.delete_question(question)
                 self.question_manager.save_to_xml("questions.xml")
                 self.update_table()
+                self.last_selected_row = None
                 break
 
     def edit(self):
         selectedQ = self.table.values[self.current]
-        print("Editing",selectedQ[0])
+        print("Editing", selectedQ[0])
+        questions = self.question_manager.get_all()
+        for question in questions:
+            if question.questionId == selectedQ[0]:
+                # Pass the question to AddPage for editing
+                add_page = self.frames["AddPage"]  # Get AddPage instance
+                add_page.prefill_fields(question)
+                add_page.editing_question_id = question.questionId
+                self.controller("AddPage")
+                break
 
 
-
-    def __init__(self, parent, question_manager, controller=None):
+    def __init__(self, parent, question_manager, controller=None, frames=None):
         super().__init__(parent)
-
         self.question_manager = question_manager  # shared instance
+        self.controller = controller 
+        self.frames = frames
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=4)
@@ -113,15 +128,10 @@ class SearchPage(ctk.CTkFrame):
         self.searchEntry = ctk.CTkEntry(searchControlsFrame, placeholder_text="Search by question or tag", font=("Helvetica", 16), height=40)
         self.searchEntry.grid(row=0, column=0, rowspan=2, sticky="nsew", padx=(5, 0), pady=(5, 0))
 
-        self.searchTypeVar = ctk.StringVar(value="AND")  # Default selection
-
         # Radio buttons for search type (AND or OR for multiple tags entered)
-
         self.searchType = ctk.StringVar(value="AND")
-
         radioAnd = ctk.CTkRadioButton(searchControlsFrame, text="AND", variable=self.searchType, value="AND")
         radioAnd.grid(row=0, column=1, sticky="w", padx=5, pady=(5, 0))
-
         radioOr = ctk.CTkRadioButton(searchControlsFrame, text="OR", variable=self.searchType, value="OR")
         radioOr.grid(row=1, column=1, sticky="w", padx=5, pady=(0, 5))
 

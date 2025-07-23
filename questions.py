@@ -24,6 +24,13 @@ class QuestionManager:
         self.questions.append(question)
         print("Added question: ", question.question_text)
 
+    def update_question(self, question):
+        print(question.questionId, question.question_text)
+        for q in self.questions:
+            if q.questionId == question.questionId:
+                self.delete_question(q)
+        self.add_question(question)
+
     def delete_question(self, question):
         self.questions.remove(question)
         print("Deleted question: ", question.question_text)
@@ -32,6 +39,7 @@ class QuestionManager:
         return self.questions
     
     def search(self, keywords, mode):
+        print("Search mode:", mode)
         keywords_lower = [kw.lower() for kw in keywords]
 
         def matches(q):

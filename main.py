@@ -51,20 +51,6 @@ pageContainer.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 pageContainer.grid_rowconfigure(0, weight=1)
 pageContainer.grid_columnconfigure(0, weight=1)
 
-
-# Load add question page
-addPage = AddPage(pageContainer,question_manager)
-addPage.grid(row=0, column=0, sticky="nsew")
-
-# Load search page
-searchPage = SearchPage(pageContainer,question_manager)
-searchPage.grid(row=0, column=0, sticky="nsew")
-
-frames = {
-    "AddPage": addPage,
-    "SearchPage": searchPage
-}
-
 # Page-switching function
 def show_frame(page_name):
     frame = frames[page_name]
@@ -72,6 +58,25 @@ def show_frame(page_name):
     frame.focus_set()
     if page_name == "SearchPage":
         frame.update_table()
+        
+# Load add question page
+addPage = AddPage(pageContainer, question_manager, controller=show_frame)
+addPage.grid(row=0, column=0, sticky="nsew")
+
+# Load search page
+searchPage = SearchPage(pageContainer, question_manager, controller=show_frame)
+searchPage.grid(row=0, column=0, sticky="nsew")
+
+# Now create the frames dictionary
+frames = {
+    "AddPage": addPage,
+    "SearchPage": searchPage
+}
+
+# Set the frames attribute for each page
+addPage.frames = frames
+searchPage.frames = frames
+
 
 # Initially show the SearchPage
 show_frame("SearchPage")
