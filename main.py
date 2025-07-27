@@ -14,7 +14,9 @@ question_manager.load_from_xml("questions.xml")
 
 app = ctk.CTk()
 app.title("my app")
-app.geometry("1000x600")
+app.geometry("1200x720")
+app.attributes("-fullscreen", "True")
+
 
 ctk.FontManager.load_font("fontFiles/Aptos-Bold.ttf")
 

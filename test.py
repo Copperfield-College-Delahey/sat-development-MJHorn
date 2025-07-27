@@ -1,23 +1,46 @@
-import customtkinter
-from CTkTable import *
-from CTkTableRowSelector import *
+import customtkinter as ctk
+from CTkTable import CTkTable
 
-root = customtkinter.CTk()
+# === Monkey Patch Begins ===
 
-value = [
-    ["Header" + letter for letter in "ABCDE"],
-    *[[i, i+1, i+2, i+3, i+4] for i in range(0, 25, 5)]
-]
-table = CTkTable(master=root, row=5, column=5, values=value)
-table.pack(expand=True, fill="both", padx=20, pady=20)
+_original_init = CTkTable.__init__
 
-# Add the selector
-row_selector = CTkTableRowSelector(table)
+def patched_init(self, *args, column_widths=None, **kwargs):
+    _original_init(self, *args, **kwargs)
+    if column_widths:
+        for i, width in enumerate(column_widths):
+            self.grid_columnconfigure(i, minsize=width)
 
-# Get the value
-button = customtkinter.CTkButton(
-    root, text="Print selected rows", command=lambda: print(row_selector.get())
-)
-button.pack(pady=(0, 20))
+CTkTable.__init__ = patched_init
 
-root.mainloop()
+# === GUI App ===
+
+def main():
+    ctk.set_appearance_mode("light")
+    ctk.set_default_color_theme("blue")
+
+    root = ctk.CTk()
+    root.title("CTkTable Column Width Test")
+    root.geometry("700x300")
+
+    sample_data = [
+        ["ID", "Name", "Role", "Notes"],
+        ["1", "Alice", "Engineer", "Works on frontend"],
+        ["2", "Bob", "Designer", "Focuses on UX"],
+        ["3", "Charlie", "Product", "Coordinates releases"]
+    ]
+
+    table = CTkTable(
+        master=root,
+        row=len(sample_data),
+        column=len(sample_data[0]),
+        values=sample_data,
+        header_color="#3e3e3e",
+        column_widths=[50, 150, 100, 300]
+    )
+    table.pack(padx=20, pady=20, expand=True, fill="both")
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()

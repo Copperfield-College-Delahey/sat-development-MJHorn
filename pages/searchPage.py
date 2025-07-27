@@ -3,6 +3,20 @@ from CTkTable import CTkTable
 from CTkTableRowSelector import *
 from PIL import Image, ImageOps
 
+
+# === CtKTable Monkey Patch for column width adjustment ===
+
+_original_init = CTkTable.__init__
+
+def patched_init(self, *args, column_widths=None, **kwargs):
+    _original_init(self, *args, **kwargs)
+    if column_widths:
+        for i, width in enumerate(column_widths):
+            self.grid_columnconfigure(i, minsize=width)
+
+CTkTable.__init__ = patched_init
+
+
 class SearchPage(ctk.CTkFrame):
 
     def update_table(self):
@@ -149,7 +163,8 @@ class SearchPage(ctk.CTkFrame):
         scrollFrame.grid(row=2, column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
 
         self.table_values = [["Question ID", "Question Text", "Tags", "Source"]]
-        self.table = CTkTable(scrollFrame, row=25, column=4,values=self.table_values, header_color="#515151")
+        self.table = CTkTable(scrollFrame, row=25, column=4,values=self.table_values, header_color="#515151", column_widths=[50, 150, 50])
+
         self.table.pack()
         self.update_table()  # Populate initially
 
