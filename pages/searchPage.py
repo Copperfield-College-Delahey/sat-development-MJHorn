@@ -1,107 +1,153 @@
 import customtkinter as ctk
-from CTkTable import CTkTable
-from CTkTableRowSelector import *
 from PIL import Image, ImageOps
-
-
-# === CtKTable Monkey Patch for column width adjustment ===
-
-_original_init = CTkTable.__init__
-
-def patched_init(self, *args, column_widths=None, **kwargs):
-    _original_init(self, *args, **kwargs)
-    if column_widths:
-        for i, width in enumerate(column_widths):
-            self.grid_columnconfigure(i, minsize=width)
-
-CTkTable.__init__ = patched_init
-
+from customTable import CustomTableWithSelection
 
 class SearchPage(ctk.CTkFrame):
 
+    def on_row_selected(self, row_index, row_data):
+        """Callback function for when a row is selected"""
+        self.current = row_index
+        self.row_clicked(row_index)
+        
     def update_table(self):
         print("Updating table")
         questions = self.question_manager.get_all()
         questions.sort(key=lambda q: q.questionId)  # Sort by questionId
-        new_values = [["Question ID", "Question Text", "Tags", "Source"]]  # header
+        
+        # Store original data WITH question ID for internal operations
+        self.original_data = [["Question ID", "Question Text", "Tags", "Source"]]  # header with ID
         for q in questions:
             formatted_tags = ", ".join(q.tags)
-            new_values.append([q.questionId, q.question_text,formatted_tags, q.source])
-        self.table.update_values(new_values)
-                
-    def poll_selected_row(self):
-        self.current = list(self.row_selector.selected_rows)
-        if len(self.current) > 0:
-            self.current = self.current[0]
+            self.original_data.append([q.questionId, q.question_text, formatted_tags, q.source])
+        
+        # Create display data WITHOUT question ID
+        display_values = [["Question Text", "Tags", "Source"]]  # header without ID
+        for q in questions:
+            formatted_tags = ", ".join(q.tags)
+            display_values.append([q.question_text, formatted_tags, q.source])  # No question ID
+        
+        # Update the table with display data (no ID column)
+        self.table.update_data(display_values)
+        self.table.frame.update_idletasks()
 
-            if self.current != self.last_selected_row:
-                self.last_selected_row = self.current
-                self.row_clicked(self.current)
+
+    def poll_selected_row(self):
+        # Get current selection from custom table
+        current_row_index, current_row_data = self.table.get_selected_row()
+        
+        if current_row_index is not None:
+            if current_row_index != self.last_selected_row:
+                self.last_selected_row = current_row_index
+                self.row_clicked(current_row_index)
+        
         self.after(20, self.poll_selected_row)
 
     def row_clicked(self, index):
         print("Row clicked!")
-        questionId = self.table.values[self.current][0]
+        # Use original data (which includes question ID) to get the question ID
+        if hasattr(self, 'original_data') and index < len(self.original_data):
+            row_data = self.original_data[index]  # This has the question ID
+            questionId = row_data[0]  # Question ID is first column in original data
+        else:
+            print("No original data available")
+            return
+        
         questions = self.question_manager.get_all()
         selectedQuestion = None
         for question in questions:
             if question.questionId == questionId:
                 selectedQuestion = question
                 break
+        
         if selectedQuestion is not None:
-            
-            image = Image.open(f"./questionFiles/{selectedQuestion.questionId}.png")
-            aspect_ratio = image.width / image.height
+            try:
+                image = Image.open(f"./questionFiles/{selectedQuestion.questionId}.png")
+                aspect_ratio = image.width / image.height
 
-            desiredWidth, desiredHeight = 500, 350
+                desiredWidth, desiredHeight = 500, 350
 
-            # AI assistance with padding image to maintain constant size regardless of aspect ratio    
-            # Resize and pad to fit the fixed area
-            image = ImageOps.contain(image, (desiredWidth, desiredHeight))
-            padded = Image.new("RGB", (desiredWidth, desiredHeight), (255, 255, 255))
-            offset = ((desiredWidth - image.width) // 2, (desiredHeight - image.height) // 2)
-            padded.paste(image, offset)
+                # AI assistance with padding image to maintain constant size regardless of aspect ratio    
+                # Resize and pad to fit the fixed area
+                image = ImageOps.contain(image, (desiredWidth, desiredHeight))
+                padded = Image.new("RGB", (desiredWidth, desiredHeight), (255, 255, 255))
+                offset = ((desiredWidth - image.width) // 2, (desiredHeight - image.height) // 2)
+                padded.paste(image, offset)
 
-            self.questionImage = ctk.CTkImage(light_image=padded, size=(desiredWidth, desiredHeight))
-            self.imageLabel.configure(image=self.questionImage)
+                self.questionImage = ctk.CTkImage(light_image=padded, size=(desiredWidth, desiredHeight))
+                self.imageLabel.configure(image=self.questionImage)
+            except Exception as e:
+                print(f"Error loading image: {e}")
 
     def search(self):
         print("Searching")
         tagsString = self.searchEntry.get()
-        tagList = tagsString.split(",")
+        tagList = [tag.strip() for tag in tagsString.split(",") if tag.strip()]  # Clean up tags
 
         searchType = self.searchType.get()
 
-        questions = self.question_manager.search(tagList,searchType)
+        questions = self.question_manager.search(tagList, searchType)
         questions.sort(key=lambda q: q.questionId)  # Sort by questionId
 
-        new_values = [["Question ID", "Question Text", "Tags", "Source"]]  # header
+        # Store original data WITH question ID for internal operations
+        self.original_data = [["Question ID", "Question Text", "Tags", "Source"]]  # header with ID
         for q in questions:
             formatted_tags = ", ".join(q.tags)
-            new_values.append([q.questionId, q.question_text,formatted_tags, q.source])
-        self.table.update_values(new_values)
+            self.original_data.append([q.questionId, q.question_text, formatted_tags, q.source])
+        
+        # Create display data WITHOUT question ID
+        display_values = [["Question Text", "Tags", "Source"]]  # header without ID
+        for q in questions:
+            formatted_tags = ", ".join(q.tags)
+            display_values.append([q.question_text, formatted_tags, q.source])  # No question ID
+        
+        # Update table with display data (no ID column)
+        self.table.update_data(display_values)
         self.last_selected_row = None
+        self.table.deselect_row()  # Clear selection
+
 
     def delete(self):
-        selectedQ = self.table.values[self.current]
-        print("Deleting",selectedQ[0])
+        current_row_index, current_row_data = self.table.get_selected_row()
+        if current_row_index is None:
+            print("No row selected")
+            return
+        
+        # Use original data to get the question ID (first column)
+        if hasattr(self, 'original_data') and current_row_index < len(self.original_data):
+            questionId = self.original_data[current_row_index][0]  # First column is question ID
+        else:
+            print("No original data available")
+            return
+        
+        print("Deleting question with ID:", questionId)
         
         questions = self.question_manager.get_all()
         for question in questions:
-            print("Comparing: ", question.question_text, selectedQ[0])
-            if question.questionId == selectedQ[0]:
+            if str(question.questionId) == str(questionId):
                 self.question_manager.delete_question(question)
                 self.question_manager.save_to_xml("questions.xml")
                 self.update_table()
                 self.last_selected_row = None
+                self.table.deselect_row()  # Clear selection
                 break
 
     def edit(self):
-        selectedQ = self.table.values[self.current]
-        print("Editing", selectedQ[0])
+        current_row_index, current_row_data = self.table.get_selected_row()
+        if current_row_index is None:
+            print("No row selected")
+            return
+        
+        # Use original data to get the question ID (first column)
+        if hasattr(self, 'original_data') and current_row_index < len(self.original_data):
+            questionId = self.original_data[current_row_index][0]  # First column is question ID
+        else:
+            print("No original data available")
+            return
+        
+        print("Editing question with ID:", questionId)
         questions = self.question_manager.get_all()
         for question in questions:
-            if question.questionId == selectedQ[0]:
+            if str(question.questionId) == str(questionId):
                 # Pass the question to AddPage for editing
                 add_page = self.frames["AddPage"]  # Get AddPage instance
                 add_page.prefill_fields(question)
@@ -109,15 +155,14 @@ class SearchPage(ctk.CTkFrame):
                 self.controller("AddPage")
                 break
 
-
     def __init__(self, parent, question_manager, controller=None, frames=None):
         super().__init__(parent)
         self.question_manager = question_manager  # shared instance
         self.controller = controller 
         self.frames = frames
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=4)
+        self.grid_columnconfigure(0, weight=3)
+        self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         # Left Frame
@@ -163,22 +208,33 @@ class SearchPage(ctk.CTkFrame):
         scrollFrame.grid(row=2, column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
 
         self.table_values = [["Question ID", "Question Text", "Tags", "Source"]]
-        self.table = CTkTable(scrollFrame, row=25, column=4,values=self.table_values, header_color="#515151", column_widths=[50, 150, 50])
-
+        self.table = CustomTableWithSelection(
+            scrollFrame, 
+            data=self.table_values, 
+            column_widths=[180, 180, 180],
+            selection_callback=self.on_row_selected,
+            header_color="#515151",
+            header_text_color="white",
+            row_colors="white",
+            row_text_color="black",
+            selected_color="gray75",
+            selected_text_color="white",
+            hover_color="gray85",
+        )
         self.table.pack()
         self.update_table()  # Populate initially
 
-        # Add the row selector to the table
-        self.row_selector = CTkTableRowSelector(self.table)
+        # Initialize selection tracking
         self.last_selected_row = None
+        self.current = None
         self.poll_selected_row()
 
         # Delete question button
-        deleteButton = ctk.CTkButton(leftFrame, text="Delete question",command=self.delete, font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2", width=100)
+        deleteButton = ctk.CTkButton(leftFrame, text="Delete question", command=self.delete, font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2", width=100)
         deleteButton.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
 
         # Edit question button
-        editButton = ctk.CTkButton(leftFrame, text="Edit question",command=self.edit, font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2", width=100)
+        editButton = ctk.CTkButton(leftFrame, text="Edit question", command=self.edit, font=("Helvetica", 16), fg_color="#515151", hover_color="#282828", cursor="hand2", width=100)
         editButton.grid(row=3, column=1, sticky="nsew", padx=10, pady=10)
 
         # Right Frame
@@ -187,5 +243,5 @@ class SearchPage(ctk.CTkFrame):
         rightFrame.grid_columnconfigure(0, weight=1)
         rightFrame.grid_rowconfigure(0, weight=1)
 
-        self.imageLabel = ctk.CTkLabel(rightFrame, text="", width=500, height=350)  # text="" hides text
+        self.imageLabel = ctk.CTkLabel(rightFrame, text="", width=500, height=500)  # text="" hides text
         self.imageLabel.grid(row=0, column=0)
